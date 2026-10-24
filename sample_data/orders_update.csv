@@ -1,0 +1,2 @@
+﻿Order ID,Order date,Customer name,Phone number,Order value,Payment type,Order status,Dispatch date,Expected delivery date,Assigned employee,Confirmed at
+DEMO-007,2026-10-18T20:19:09+05:30,Sample Customer 7,9000000007,7500.00,COD,delivered,2026-10-20T20:19:09+05:30,2026-10-22T20:19:09+05:30,ravi,2026-10-19T20:19:09+05:30

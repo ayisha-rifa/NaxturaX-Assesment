@@ -1,0 +1,7 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Rule settings{% endblock %}
+{% block content %}
+<h1>Rule settings</h1><p>Saving a threshold reevaluates the orders. Existing task deadlines and manual assignments are preserved.</p>
+<section class="panel narrow"><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Save and check orders</button></form></section>
+<section class="panel"><h2>Follow-up defaults</h2><p>These deadlines start when an exception is first detected. They are separate from the order-age thresholds above.</p><table><thead><tr><th>Exception</th><th>Priority</th><th>Follow-up due</th></tr></thead><tbody>{% for code, rule in rules.items %}<tr><td>{{ rule.label }}</td><td>{{ rule.priority }}</td><td>{% if rule.hours == 0 %}Immediately{% else %}Within {{ rule.hours }} hour{{ rule.hours|pluralize }}{% endif %}</td></tr>{% endfor %}</tbody></table><p class="muted">Priorities, recommended actions and follow-up windows are kept together in <code>tracker/rules.py</code>.</p></section>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><h1>Dashboard</h1><p>Orders and follow-up work at a glance.</p></div>
+  {% if user.is_staff %}<form method="post" action="{% url 'tracker:check_rules' %}">{% csrf_token %}<button type="submit" class="secondary">Check rules now</button></form>{% endif %}
+</div>
+{% include 'tracker/_filters.html' %}
+<div class="stats">
+  <div class="stat"><span>Total orders</span><strong>{{ total_orders }}</strong></div>
+  <div class="stat"><span>Orders needing attention</span><strong>{{ attention_count }}</strong></div>
+  <div class="stat"><span>Pending tasks</span><strong>{{ pending_count }}</strong><small>{{ open_count }} open; remainder in progress</small></div>
+  <div class="stat"><span>Overdue tasks</span><strong class="overdue">{{ overdue_count }}</strong></div>
+  <div class="stat"><span>Orders needing data correction</span><strong>{{ correction_count }}</strong><small><a href="{% url 'tracker:orders' %}?needs_data=on">Review data issues</a></small></div>
+</div>
+<p class="muted">Pending = Open + In Progress. Attention counts unique orders with pending tasks or data issues. All numbers follow the selected filters.</p>
+<div class="two-columns">
+  <section class="panel"><h2>Pending exceptions by category</h2><table><thead><tr><th>Category</th><th>Tasks</th></tr></thead><tbody>{% for row in category_counts %}<tr><td>{{ row.name }}</td><td>{{ row.count }}</td></tr>{% endfor %}</tbody></table></section>
+  <section class="panel"><h2>Employee pending work</h2><table><thead><tr><th>Employee</th><th>Tasks</th></tr></thead><tbody>{% for row in employee_counts %}<tr><td>{% if row.assigned_employee__first_name %}{{ row.assigned_employee__first_name }} {{ row.assigned_employee__last_name }}{% else %}{{ row.assigned_employee__username }}{% endif %}</td><td>{{ row.count }}</td></tr>{% empty %}<tr><td colspan="2" class="empty">No pending work.</td></tr>{% endfor %}</tbody></table></section>
+</div>
+<section class="panel"><h2>High-priority cases</h2><p class="muted">Up to 15 pending tasks, earliest deadline first. Open Tasks to see all cases.</p>{% include 'tracker/_task_table.html' with tasks=high_priority_tasks %}</section>
+{% endblock %}

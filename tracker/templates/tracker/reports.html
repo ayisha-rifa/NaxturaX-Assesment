@@ -1,0 +1,7 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Daily report{% endblock %}
+{% block content %}
+<h1>Daily exception report</h1>
+<section class="panel narrow"><form method="get" action="{% url 'tracker:daily_report' %}">{{ form.as_p }}<button type="submit">Download CSV</button></form></section>
+<section class="panel"><h2>What the report includes</h2><ul><li>All exceptions first detected on the selected business date.</li><li>All currently unresolved tasks, including overdue and high-priority cases.</li><li>Employee names, required actions, deadlines and task statuses.</li></ul><p>Each task appears once, with flags showing which categories it belongs to. Unresolved and overdue values describe the state at export time, not a historical end-of-day snapshot.</p>{% if not user.is_staff %}<p>Your report includes only tasks assigned to you.</p>{% endif %}</section>
+{% endblock %}

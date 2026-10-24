@@ -1,0 +1,7 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Tasks{% endblock %}
+{% block content %}
+<h1>Follow-up tasks</h1><p>Open a task to update progress{% if user.is_staff %} or reassign it{% endif %}.</p>
+{% include 'tracker/_filters.html' %}
+<section class="panel">{% include 'tracker/_task_table.html' %}{% include 'tracker/_pagination.html' %}</section>
+{% endblock %}

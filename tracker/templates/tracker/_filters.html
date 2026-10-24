@@ -1,0 +1,10 @@
+<form method="get" class="panel filters">
+  {{ filter_form.non_field_errors }}
+  <div class="filter-grid">
+    {% for field in filter_form %}<div class="field">{{ field.label_tag }} {{ field }} {{ field.errors }}</div>{% endfor %}
+    {% if statuses %}
+    <div class="field"><label for="status">Task status</label><select name="status" id="status"><option value="">All statuses</option>{% for status in statuses %}<option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>{{ status }}</option>{% endfor %}</select></div>
+    {% endif %}
+  </div>
+  <div class="actions"><button type="submit">Apply filters</button><a class="button secondary" href="{{ request.path }}">Clear filters</a></div>
+</form>

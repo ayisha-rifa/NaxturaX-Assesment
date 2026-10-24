@@ -1,0 +1,21 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Task {{ task.pk }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'tracker:tasks' %}">← All tasks</a></p>
+<h1>Task #{{ task.pk }} · {{ task.get_rule_code_display }}</h1>
+<div class="two-columns">
+  <section class="panel"><h2>Task details</h2><dl class="details">
+    <dt>Order</dt><dd><a href="{% url 'tracker:order_detail' task.order_id %}">{{ task.order.order_id }}</a></dd>
+    <dt>Customer</dt><dd>{{ task.order.customer_name }} · {{ task.order.phone }}</dd>
+    <dt>Reason</dt><dd>{{ task.reason }}</dd><dt>Action required</dt><dd>{{ task.action_required }}</dd>
+    <dt>Priority</dt><dd><span class="badge priority-{{ task.priority|lower }}">{{ task.priority }}</span></dd>
+    <dt>Deadline</dt><dd>{{ task.deadline|date:'d M Y, H:i' }}{% if task.is_overdue %} <strong class="overdue">Overdue</strong>{% endif %}</dd>
+    <dt>Detected</dt><dd>{{ task.detected_at|date:'d M Y, H:i' }}</dd><dt>Occurrence</dt><dd>{{ task.occurrence }}</dd>
+    <dt>Assigned employee</dt><dd>{{ task.assigned_employee.get_full_name|default:task.assigned_employee.username }}</dd>
+    <dt>Current status</dt><dd>{{ task.status }}</dd>
+    {% if task.resolved_at %}<dt>Resolved at</dt><dd>{{ task.resolved_at|date:'d M Y, H:i' }}</dd>{% endif %}
+  </dl></section>
+  <section class="panel"><h2>Update task</h2><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Save changes</button></form><p class="muted">Reassignment keeps the original deadline. An overdue task remains overdue until resolved.</p>{% if task.status == 'Resolved' and task.condition_active %}<p>The follow-up is resolved, but the source condition still applies. It will not reopen just because the same file is uploaded.</p>{% endif %}</section>
+</div>
+<section class="panel"><h2>Audit history</h2><div class="table-scroll"><table><thead><tr><th>Time</th><th>Order ID</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody>{% for event in events %}<tr><td>{{ event.timestamp|date:'d M Y, H:i:s' }}</td><td>{{ task.order.order_id }}</td><td>{{ event.actor_name }}</td><td>{{ event.action }}</td><td>{{ event.details }}</td></tr>{% empty %}<tr><td colspan="5" class="empty">No audit events.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

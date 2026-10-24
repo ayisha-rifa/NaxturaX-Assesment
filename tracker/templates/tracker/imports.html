@@ -1,0 +1,15 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Import orders{% endblock %}
+{% block content %}
+<h1>Import orders</h1>
+<p>Preview the file first. Orders and tasks change only when you confirm the import.</p>
+<section class="panel">
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<button type="submit">Preview file</button></form>
+  <details><summary>File columns and formats</summary>
+    <p>Order ID, Order date, Customer name, Phone number, Order value, Payment type, Order status, Dispatch date, Expected delivery date, Assigned employee. An optional <strong>Confirmed at</strong> timestamp supports dispatch-delay checks.</p>
+    <p>Payment: prepaid or COD. Status: unconfirmed, confirmed, dispatched, delivery_failed, delivered, cancelled. Use an employee username or full name.</p>
+    <p>Recommended timestamp: <code>2026-10-23T10:30:00+05:30</code>. Date-only values use <code>YYYY-MM-DD</code>. Missing timestamp precision is shown as a correction issue when a rule needs it.</p>
+  </details>
+</section>
+<section class="panel"><h2>Recent imports</h2><div class="table-scroll"><table><thead><tr><th>File</th><th>Uploaded</th><th>Status</th></tr></thead><tbody>{% for batch in batches %}<tr><td><a href="{% url 'tracker:import_detail' batch.pk %}">{{ batch.filename }}</a></td><td>{{ batch.created_at|date:'d M Y, H:i' }}</td><td>{{ batch.status|title }}</td></tr>{% empty %}<tr><td colspan="3" class="empty">No files uploaded yet.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

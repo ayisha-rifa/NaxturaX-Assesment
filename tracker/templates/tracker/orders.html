@@ -1,0 +1,7 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<h1>Orders</h1><p>Accepted orders and any information needing correction.</p>
+{% include 'tracker/_filters.html' %}
+<section class="panel"><div class="table-scroll"><table><thead><tr><th>Order ID</th><th>Order date</th><th>Customer</th><th>Value</th><th>Status</th><th>Employee</th><th>Data check</th></tr></thead><tbody>{% for order in orders %}<tr><td><a href="{% url 'tracker:order_detail' order.pk %}">{{ order.order_id }}</a></td><td>{{ order.order_date|date:'d M Y' }}</td><td>{{ order.customer_name }}<br><span class="muted">{{ order.phone }}</span></td><td>₹{{ order.order_value }}</td><td>{{ order.get_status_display }}</td><td>{{ order.assigned_employee.get_full_name|default:order.assigned_employee.username }}</td><td>{% if order.all_issues %}<span class="badge priority-medium">Needs correction</span>{% else %}OK{% endif %}</td></tr>{% empty %}<tr><td colspan="7" class="empty">No matching orders. A manager can import a sample file to begin.</td></tr>{% endfor %}</tbody></table></div>{% include 'tracker/_pagination.html' %}</section>
+{% endblock %}

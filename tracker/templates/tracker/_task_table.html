@@ -1,0 +1,18 @@
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Order / customer</th><th>Exception</th><th>Priority</th><th>Employee</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for task in tasks %}
+    <tr>
+      <td><a href="{% url 'tracker:order_detail' task.order_id %}">{{ task.order.order_id }}</a><br><span class="muted">{{ task.order.customer_name }}</span></td>
+      <td>{{ task.get_rule_code_display }}</td>
+      <td><span class="badge priority-{{ task.priority|lower }}">{{ task.priority }}</span></td>
+      <td>{{ task.assigned_employee.get_full_name|default:task.assigned_employee.username }}</td>
+      <td>{{ task.deadline|date:'d M Y, H:i' }}{% if task.is_overdue %}<br><span class="overdue">Overdue</span>{% endif %}</td>
+      <td>{{ task.status }}</td>
+      <td><a href="{% url 'tracker:task_detail' task.pk %}">View task</a></td>
+    </tr>
+  {% empty %}<tr><td colspan="7" class="empty">No tasks to show.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>

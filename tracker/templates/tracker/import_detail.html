@@ -1,0 +1,28 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Import preview{% endblock %}
+{% block content %}
+<h1>{% if batch.status == 'completed' %}Import results{% else %}Import preview{% endif %}</h1>
+<p>{{ batch.filename }} · {{ batch.created_at|date:'d M Y, H:i' }}</p>
+<div class="stats compact">
+  <div class="stat"><span>File rows</span><strong>{{ batch.summary.rows }}</strong></div>
+  <div class="stat"><span>Rejected rows</span><strong>{{ batch.summary.rejected }}</strong></div>
+  <div class="stat"><span>Duplicate rows</span><strong>{{ batch.summary.duplicates }}</strong></div>
+  <div class="stat"><span>{% if batch.status == 'completed' %}Created{% else %}To create{% endif %}</span><strong>{{ batch.summary.created }}</strong></div>
+  <div class="stat"><span>{% if batch.status == 'completed' %}Updated{% else %}Proposed updates{% endif %}</span><strong>{{ batch.summary.updated }}</strong></div>
+  <div class="stat"><span>Unchanged</span><strong>{{ batch.summary.unchanged }}</strong></div>
+</div>
+{% if batch.status != 'completed' %}
+<section class="panel">
+  <form method="post" action="{% url 'tracker:import_commit' batch.pk %}">{% csrf_token %}
+    <p>Valid new rows can be imported. Invalid rows stay in this result page for correction and reupload.</p>
+    <p><label><input type="checkbox" name="allow_updates"> Also apply the proposed changes to existing orders</label></p>
+    <p class="muted">Existing tasks keep their assignments, status and deadlines. Changed orders are rechecked against the rules.</p>
+    <button type="submit">Confirm import</button> <a class="button secondary" href="{% url 'tracker:imports' %}">Choose another file</a>
+  </form>
+</section>
+{% else %}<p class="message success">This import is completed. {{ batch.summary.skipped_updates }} proposed update(s) were skipped.</p>{% endif %}
+{% if batch.issues %}
+<section class="panel"><h2>Errors and warnings</h2><div class="table-scroll"><table><thead><tr><th>Row</th><th>Order</th><th>Field</th><th>Type</th><th>Message</th></tr></thead><tbody>{% for issue in batch.issues %}<tr><td>{{ issue.row_number }}</td><td>{{ issue.order_id }}</td><td>{{ issue.field }}</td><td>{{ issue.severity|title }}</td><td>{{ issue.message }}</td></tr>{% endfor %}</tbody></table></div></section>
+{% endif %}
+<section class="panel"><h2>Row preview</h2><div class="table-scroll"><table><thead><tr><th>Row</th><th>Order</th><th>Customer</th><th>Status</th><th>Import action</th><th>Notes</th></tr></thead><tbody>{% for row in batch.preview %}<tr><td>{{ row.row_number }}</td><td>{{ row.data.order_id }}</td><td>{{ row.data.customer_name }}</td><td>{{ row.data.status }}</td><td>{{ row.action|title }}</td><td>{% for error in row.errors %}<div class="overdue">{{ error }}</div>{% endfor %}{% for warning in row.warnings %}<div>{{ warning }}</div>{% endfor %}{% if row.action == 'update' %}<details><summary>View current and proposed values</summary><p><strong>Current:</strong> {{ row.before }}</p><p><strong>Proposed:</strong> {{ row.data }}</p></details>{% endif %}</td></tr>{% empty %}<tr><td colspan="6" class="empty">No data rows.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

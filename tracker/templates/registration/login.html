@@ -1,0 +1,15 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<section class="panel login-panel">
+  <h1>Log in</h1>
+  <p>Track pending orders and follow-up tasks.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <button type="submit">Log in</button>
+  </form>
+  <p class="muted">Use the demonstration account details in the README.</p>
+</section>
+{% endblock %}

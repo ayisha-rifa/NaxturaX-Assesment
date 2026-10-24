@@ -1,0 +1,18 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Order {{ order.order_id }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'tracker:orders' %}">← All orders</a></p>
+<h1>Order {{ order.order_id }}</h1>
+<section class="panel"><dl class="details">
+  <dt>Customer</dt><dd>{{ order.customer_name }}</dd><dt>Phone</dt><dd>{{ order.phone }}</dd>
+  <dt>Order date</dt><dd>{% if order.ordered_at %}{{ order.ordered_at|date:'d M Y, H:i' }}{% else %}{{ order.order_date|date:'d M Y' }} (time not provided){% endif %}</dd>
+  <dt>Order value</dt><dd>₹{{ order.order_value }}</dd><dt>Payment</dt><dd>{{ order.get_payment_type_display }}</dd>
+  <dt>Order status</dt><dd>{{ order.get_status_display }}</dd>
+  <dt>Confirmed at</dt><dd>{{ order.confirmed_at|date:'d M Y, H:i'|default:'Not provided' }}</dd>
+  <dt>Dispatch</dt><dd>{% if order.dispatch_at %}{{ order.dispatch_at|date:'d M Y, H:i' }}{% elif order.dispatch_date %}{{ order.dispatch_date|date:'d M Y' }} (date only){% else %}Not provided{% endif %}</dd>
+  <dt>Expected delivery</dt><dd>{% if order.expected_delivery_at %}{{ order.expected_delivery_at|date:'d M Y, H:i' }}{% elif order.expected_delivery_date %}{{ order.expected_delivery_date|date:'d M Y' }} (end of day){% else %}Not provided{% endif %}</dd>
+  <dt>Order employee</dt><dd>{{ order.assigned_employee.get_full_name|default:order.assigned_employee.username }}</dd>
+</dl></section>
+{% if order.all_issues %}<section class="panel warning"><h2>Data correction needed</h2><ul>{% for issue in order.all_issues %}<li>{{ issue }}</li>{% endfor %}</ul><p>Correct the source file and reupload it with updates enabled. Missing rule evidence does not create a guessed exception.</p></section>{% endif %}
+<section class="panel"><h2>Follow-up tasks</h2><p class="muted">Task assignees can differ from the original order employee after reassignment.</p>{% include 'tracker/_task_table.html' %}</section>
+{% endblock %}
